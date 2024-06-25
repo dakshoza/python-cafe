@@ -69,14 +69,8 @@ class BiscottiCafe:
         if os.path.exists('customer_data.csv'):
             df = pd.read_csv('customer_data.csv')
             df['Customer Order'] = df['Customer Order'].fillna('').astype(str)
-            
-            all_items = []
-            for order in df['Customer Order']:
-                items = re.findall(r'(\w+)\s*x\s*(\d+)', order)
-                for item, quantity in items:
-                     all_items.extend([item] * int(quantity))
-            
-            item_counts = Counter(all_items)
+            all_items = [re.findall(r'(\w+)\s*x\s*(\d+)', order) for order in df['Customer Order']]
+            item_counts = Counter(item for order_items in all_items for item, _ in order_items)
             return [item for item, _ in item_counts.most_common(3)]
         return []
 
@@ -84,7 +78,7 @@ class BiscottiCafe:
         print("\nMenu:")
         print("-" * 75)
 
-        max_name_length = max(len(item.name.capitalize()) for item in self.menu.keys()) + 5  # Add some padding
+        max_name_length = max(len(item.name.capitalize()) for item in self.menu) + 5
         max_price_length = max(len(f"{details.price:.2f} Rs") for details in self.menu.values()) + 5
 
         for index, (item, details) in enumerate(self.menu.items(), 1):
@@ -123,7 +117,7 @@ class BiscottiCafe:
         self.display_menu()
         while True:
             item_input = input("Enter item number or name (or 'done' or 'x' to finish): ")
-            if item_input.lower() == 'done' or item_input.lower() == 'x':
+            if item_input.lower() in ['done', 'x']:
                 break
 
             try:
