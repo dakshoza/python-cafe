@@ -1,0 +1,5 @@
+Order ID,Table Number,Customer Order,Total Bill,Tip,Entry Time,Exit Time
+1,1,"Sandwich x2, Coffee x2",150.0,0.0,2024-07-05 15:16:35,2024-07-05 15:24:45
+2,4,Cake x1,150.0,22.0,2024-07-05 15:26:54,2024-07-05 15:27:21
+3,1,"Burger x1, Fries x5, Tea x2",305.0,50.0,2024-07-05 15:24:59,2024-07-05 15:27:29
+4,3,"Burger x3, Fries x3",375.0,0.0,2024-07-05 15:27:02,2024-07-05 15:27:32

@@ -70,7 +70,10 @@ class BiscottiCafe:
             df = pd.read_csv('customer_data.csv')
             df['Customer Order'] = df['Customer Order'].fillna('').astype(str)
             all_items = [re.findall(r'(\w+)\s*x\s*(\d+)', order) for order in df['Customer Order']]
-            item_counts = Counter(item for order_items in all_items for item, _ in order_items)
+            item_counts = Counter()
+            for order_items in all_items:
+                for item, quantity in order_items:
+                    item_counts[item] += int(quantity)
             return [item for item, _ in item_counts.most_common(3)]
         return []
 
@@ -84,7 +87,7 @@ class BiscottiCafe:
         for index, (item, details) in enumerate(self.menu.items(), 1):
             name = item.name.capitalize()
             price = f"{details.price:.2f} Rs"
-            prep_time = f"(Prep time: {details.prep_time} min)"
+            prep_time = f"(Prep time: {details.prep_time} mins)"
             print(f"{index}. {name.ljust(max_name_length)} {price.ljust(max_price_length)} {prep_time}")
 
         print("-" * 75)
@@ -100,8 +103,13 @@ class BiscottiCafe:
         total_wait_time = 0
         for item in order_items:
             item_wait_time = self.menu[item.item].prep_time
-            scaled_wait_time = math.ceil((item.quantity / 4) * item_wait_time)
-            total_wait_time += scaled_wait_time
+            if item.quantity > 4:
+                scaled_wait_time = math.ceil((item.quantity / 4)) * item_wait_time
+                if scaled_wait_time > total_wait_time:
+                    total_wait_time = scaled_wait_time
+            else:
+                if item_wait_time > total_wait_time:
+                    total_wait_time = item_wait_time
         return total_wait_time
 
     def place_order(self, table_number: int):
@@ -119,7 +127,6 @@ class BiscottiCafe:
             item_input = input("Enter item number or name (or 'done' or 'x' to finish): ")
             if item_input.lower() in ['done', 'x']:
                 break
-
             try:
                 if item_input.isdigit():
                     food_item = list(FoodItem)[int(item_input) - 1]
